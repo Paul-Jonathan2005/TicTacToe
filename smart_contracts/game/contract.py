@@ -36,8 +36,11 @@ class TicTacToe(ARC4Contract):
 
         self.games = BoxMap(UInt64, GameState)
 
-
     @subroutine
     def opt_in(self) -> None:
         self.games_played[Txn.sender] = UInt64(0)
         self.games_won[Txn.sender] = UInt64(0)
+
+    @subroutine
+    def coord_to_matrix_index(self, x: UInt64, y: UInt64) -> UInt64:
+        return 3 * y + x
