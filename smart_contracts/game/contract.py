@@ -1,21 +1,22 @@
-# Create the basic file structure for your smart contract
-# smart_contracts/tic_tac_toe/contract.py
+from typing import Literal, Tuple, TypeAlias
 
-from typing import Literal, TypeAlias
 from algopy import (
     ARC4Contract,
-    arc4,
     BoxMap,
+    Global,
     LocalState,
-    UInt64,
-    Txn,
-    subroutine,
     OnCompleteAction,
+    Txn,
+    UInt64,
+    arc4,
+    gtxn,
+    itxn,
+    op,
+    subroutine,
+    urange,
 )
 
 Board: TypeAlias = arc4.StaticArray[arc4.Byte, Literal[9]]
-
-# Add game constants
 HOST_MARK = 1
 GUEST_MARK = 2
 
@@ -42,10 +43,19 @@ class TicTacToe(ARC4Contract):
         self.games_played[Txn.sender] = UInt64(0)
         self.games_won[Txn.sender] = UInt64(0)
 
-    @subroutine
-    def coord_to_matrix_index(self, x: UInt64, y: UInt64) -> UInt64:
-        return 3 * y + x
 
-    @arc4.baremethod(allow_actions=[OnCompleteAction.CloseOut])
-    def close_out(self) -> None:
-        pass
+
+    @arc4.abimethod(allow_actions=[OnCompleteAction.NoOp, OnCompleteAction.OptIn])
+    def new_game(self, mbr: gtxn.PaymentTransaction) -> UInt64:
+        if Txn.on_completion == OnCompleteAction.OptIn:
+            self.opt_in()
+
+        self.id_counter += 1
+
+        assert mbr.receiver == Global.current_application_address
+        pre_new_game_box, exists = op.AcctParamsGet.acct_min_balance(
+            Global.current_application_address
+        )
+        assert exists
+
+        return self.id_counter
