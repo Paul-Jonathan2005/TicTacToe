@@ -10,6 +10,7 @@ from algopy import (
     UInt64,
     Txn,
     subroutine,
+    OnCompleteAction,
 )
 
 Board: TypeAlias = arc4.StaticArray[arc4.Byte, Literal[9]]
@@ -44,3 +45,7 @@ class TicTacToe(ARC4Contract):
     @subroutine
     def coord_to_matrix_index(self, x: UInt64, y: UInt64) -> UInt64:
         return 3 * y + x
+
+    @arc4.baremethod(allow_actions=[OnCompleteAction.CloseOut])
+    def close_out(self) -> None:
+        pass
