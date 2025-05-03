@@ -8,6 +8,8 @@ from algopy import (
     BoxMap,
     LocalState,
     UInt64,
+    Txn,
+    subroutine,
 )
 
 Board: TypeAlias = arc4.StaticArray[arc4.Byte, Literal[9]]
@@ -33,3 +35,9 @@ class TicTacToe(ARC4Contract):
         self.games_won = LocalState(UInt64)
 
         self.games = BoxMap(UInt64, GameState)
+
+
+    @subroutine
+    def opt_in(self) -> None:
+        self.games_played[Txn.sender] = UInt64(0)
+        self.games_won[Txn.sender] = UInt64(0)
