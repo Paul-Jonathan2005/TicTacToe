@@ -57,6 +57,7 @@ class TicTacToe(ARC4Contract):
         assert exists
 
         return self.id_counter
+
         self.games[self.id_counter] = GameState(
             board=arc4.StaticArray[arc4.Byte, Literal[9]].from_bytes(op.bzero(9)),
             host=arc4.Address(Txn.sender),
@@ -71,3 +72,13 @@ class TicTacToe(ARC4Contract):
         assert mbr.amount == (post_new_game_box - pre_new_game_box)
 
         return self.id_counter
+
+    @arc4.abimethod(allow_actions=[OnCompleteAction.NoOp, OnCompleteAction.OptIn])
+    def join(self, game_id: UInt64) -> None:
+        if Txn.on_completion == OnCompleteAction.OptIn:
+            self.opt_in()
+
+        assert self.games[game_id].host.native != Txn.sender
+        assert self.games[game_id].guest == arc4.Address()
+
+        self.games[game_id].guest = arc4.Address(Txn.sender)
