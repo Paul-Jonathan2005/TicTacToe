@@ -1,4 +1,6 @@
 from typing import Literal, Tuple, TypeAlias
+from typing import Tuple
+from algopy import urange
 
 from algopy import (
     ARC4Contract,
@@ -82,16 +84,16 @@ class TicTacToe(ARC4Contract):
         assert self.games[game_id].guest == arc4.Address()
 
         self.games[game_id].guest = arc4.Address(Txn.sender)
-        
+
     @arc4.abimethod
     def move(self, game_id: UInt64, x: UInt64, y: UInt64) -> None:
         game = self.games[game_id].copy()
-        
+
         assert not game.is_over.native
         assert game.board[self.coord_to_matrix_index(x, y)] == arc4.Byte()
         assert Txn.sender == game.host.native or Txn.sender == game.guest.native
         is_host = Txn.sender == game.host.native
-        
+
         if is_host:
             assert game.turns.native % 2 == 0
             self.games[game_id].board[self.coord_to_matrix_index(x, y)] = arc4.Byte(
@@ -102,7 +104,15 @@ class TicTacToe(ARC4Contract):
             self.games[game_id].board[self.coord_to_matrix_index(x, y)] = arc4.Byte(
                 GUEST_MARK
             )
-        
+
         self.games[game_id].turns = arc4.UInt8(
             self.games[game_id].turns.native + UInt64(1)
         )
+
+    @subroutine
+    def is_game_over(self, board: Board) -> Tuple[bool, bool]:
+        for i in urange(3):
+            if board[3 * i] == board[3 * i + 1] == board[3 * i + 2] != arc4.Byte():
+                return True, False
+            if board[i] == board[i + 3] == board[i + 6] != arc4.Byte():
+                return True, False
