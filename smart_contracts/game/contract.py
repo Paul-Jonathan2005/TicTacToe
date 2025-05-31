@@ -91,3 +91,18 @@ class TicTacToe(ARC4Contract):
         assert game.board[self.coord_to_matrix_index(x, y)] == arc4.Byte()
         assert Txn.sender == game.host.native or Txn.sender == game.guest.native
         is_host = Txn.sender == game.host.native
+        
+        if is_host:
+            assert game.turns.native % 2 == 0
+            self.games[game_id].board[self.coord_to_matrix_index(x, y)] = arc4.Byte(
+                HOST_MARK
+            )
+        else:
+            assert game.turns.native % 2 == 1
+            self.games[game_id].board[self.coord_to_matrix_index(x, y)] = arc4.Byte(
+                GUEST_MARK
+            )
+        
+        self.games[game_id].turns = arc4.UInt8(
+            self.games[game_id].turns.native + UInt64(1)
+        )
