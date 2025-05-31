@@ -82,3 +82,12 @@ class TicTacToe(ARC4Contract):
         assert self.games[game_id].guest == arc4.Address()
 
         self.games[game_id].guest = arc4.Address(Txn.sender)
+        
+    @arc4.abimethod
+    def move(self, game_id: UInt64, x: UInt64, y: UInt64) -> None:
+        game = self.games[game_id].copy()
+        
+        assert not game.is_over.native
+        assert game.board[self.coord_to_matrix_index(x, y)] == arc4.Byte()
+        assert Txn.sender == game.host.native or Txn.sender == game.guest.native
+        is_host = Txn.sender == game.host.native
