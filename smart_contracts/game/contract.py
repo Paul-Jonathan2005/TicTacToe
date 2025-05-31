@@ -116,3 +116,14 @@ class TicTacToe(ARC4Contract):
                 return True, False
             if board[i] == board[i + 3] == board[i + 6] != arc4.Byte():
                 return True, False
+            if board[0] == board[4] == board[8] != arc4.Byte():
+                return True, False
+            if board[2] == board[4] == board[6] != arc4.Byte():
+                return True, False
+            
+            # Draw check
+            for i in urange(9):
+                if board[i] == arc4.Byte():
+                    return False, False
+            
+        return True, True
