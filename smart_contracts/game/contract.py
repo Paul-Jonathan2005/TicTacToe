@@ -1,6 +1,7 @@
 from typing import Literal, Tuple, TypeAlias
 from typing import Tuple
 from algopy import urange
+from algopy import log
 
 from algopy import (
     ARC4Contract,
@@ -120,13 +121,14 @@ class TicTacToe(ARC4Contract):
                 return True, False
             if board[2] == board[4] == board[6] != arc4.Byte():
                 return True, False
-            
+
             # Draw check
             for i in urange(9):
                 if board[i] == arc4.Byte():
                     return False, False
-            
+
         return True, True
+
     is_over, is_draw = self.is_game_over(self.games[game_id].board.copy())
     if is_over:
         self.games[game_id].is_over = arc4.Bool(True)
@@ -135,14 +137,14 @@ class TicTacToe(ARC4Contract):
     if not is_draw:
         winner = game.host if is_host else game.guest
         self.games_won[winner.native] += UInt64(1)
-        
+
     @arc4.abimethod
     def delete_game(self, game_id: UInt64) -> None:
         game = self.games[game_id].copy()
-        
+
         assert game.guest == arc4.Address() or game.is_over.native
         assert Txn.sender == self.games[game_id].host.native
-        
+
         pre_del_box, exists = op.AcctParamsGet.acct_min_balance(
             Global.current_application_address
         )
@@ -152,19 +154,31 @@ class TicTacToe(ARC4Contract):
             Global.current_application_address
         )
         assert exists
-        
+
         itxn.Payment(
             receiver=game.host.native, amount=pre_del_box - post_del_box
         ).submit()
-    
+
     @arc4.abimethod
     def delete_game(self, game_id: UInt64) -> None:
         game = self.games[game_id].copy()
         assert game.guest == arc4.Address() or game.is_over.native
         assert Txn.sender == self.games[game_id].host.native
-        pre_del_box, exists = op.AcctParamsGet.acct_min_balance(Global.current_application_address)
+        pre_del_box, exists = op.AcctParamsGet.acct_min_balance(
+            Global.current_application_address
+        )
         assert exists
         del self.games[game_id]  # This removes the box storage
-        post_del_box, exists = op.AcctParamsGet.acct_min_balance(Global.current_application_address)
+        post_del_box, exists = op.AcctParamsGet.acct_min_balance(
+            Global.current_application_address
+        )
         assert exists
-        itxn.Payment(receiver=game.host.native, amount=pre_del_box - post_del_box).submit()
+        itxn.Payment(
+            receiver=game.host.native, amount=pre_del_box - post_del_box
+        ).submit()
+
+        @arc4.abimethod
+        def new_game(self, mbr: gtxn.PaymentTransaction) -> UInt64:
+            # ...existing logic...
+            log("New game created by {}".format(Txn.sender))
+            return self.id_counter
