@@ -34,3 +34,6 @@ def test_draw_condition(algorand):
 def reset_game_state():
     # Logic to reset or re-initialize contract state for isolated tests
     pass
+def test_host_cannot_join_as_guest(algorand):
+    # Host creates game, then tries to join as guest, expect failure
+    pass
