@@ -31,3 +31,6 @@ def test_invalid_move_occupied_cell(algorand):
 def test_draw_condition(algorand):
     # Play a full game resulting in a draw, assert is_over and is_draw are set
     pass
+def reset_game_state():
+    # Logic to reset or re-initialize contract state for isolated tests
+    pass
