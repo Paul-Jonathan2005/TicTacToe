@@ -1,3 +1,7 @@
+from algokit_utils.config import config
+config.configure(debug=True, trace_all=True)
+
+
 import logging
 from algosdk.v2client.algod import AlgodClient
 from algosdk.v2client.indexer import IndexerClient
