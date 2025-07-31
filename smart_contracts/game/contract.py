@@ -135,3 +135,24 @@ class TicTacToe(ARC4Contract):
     if not is_draw:
         winner = game.host if is_host else game.guest
         self.games_won[winner.native] += UInt64(1)
+        
+    @arc4.abimethod
+    def delete_game(self, game_id: UInt64) -> None:
+    game = self.games[game_id].copy()
+    
+    assert game.guest == arc4.Address() or game.is_over.native
+    assert Txn.sender == self.games[game_id].host.native
+    
+    pre_del_box, exists = op.AcctParamsGet.acct_min_balance(
+        Global.current_application_address
+    )
+    assert exists
+    del self.games[game_id]
+    post_del_box, exists = op.AcctParamsGet.acct_min_balance(
+        Global.current_application_address
+    )
+    assert exists
+    
+    itxn.Payment(
+        receiver=game.host.native, amount=pre_del_box - post_del_box
+    ).submit()
