@@ -1,44 +1,34 @@
 import logging
-
+from algosdk.v2client.algod import AlgodClient
+from algosdk.v2client.indexer import IndexerClient
 import algokit_utils
+from algokit_utils import (
+    EnsureBalanceParameters,
+    TransactionParameters,
+    ensure_funded,
+)
+from algokit_utils.beta.algorand_client import AlgorandClient
+from algokit_utils.beta.client_manager import AlgoSdkClients
 
 logger = logging.getLogger(__name__)
 
-
-# define deployment behaviour based on supplied app spec
-def deploy() -> None:
-    from smart_contracts.artifacts.game.game_client import (
-        HelloArgs,
-        GameFactory,
+def deploy(
+    algod_client: AlgodClient,
+    indexer_client: IndexerClient,
+    app_spec: algokit_utils.ApplicationSpecification,
+    deployer: algokit_utils.Account,
+) -> None:
+    from smart_contracts.artifacts.tictactoe.tic_tac_toe_client import (
+        TicTacToeClient,
     )
-
-    algorand = algokit_utils.AlgorandClient.from_environment()
-    deployer_ = algorand.account.from_environment("DEPLOYER")
-
-    factory = algorand.client.get_typed_app_factory(
-        GameFactory, default_sender=deployer_.address
+    
+    app_client = TicTacToeClient(
+        algod_client,
+        creator=deployer,
+        indexer_client=indexer_client,
     )
-
-    app_client, result = factory.deploy(
-        on_update=algokit_utils.OnUpdate.AppendApp,
+    
+    app_client.deploy(
         on_schema_break=algokit_utils.OnSchemaBreak.AppendApp,
-    )
-
-    if result.operation_performed in [
-        algokit_utils.OperationPerformed.Create,
-        algokit_utils.OperationPerformed.Replace,
-    ]:
-        algorand.send.payment(
-            algokit_utils.PaymentParams(
-                amount=algokit_utils.AlgoAmount(algo=1),
-                sender=deployer_.address,
-                receiver=app_client.app_address,
-            )
-        )
-
-    name = "world"
-    response = app_client.send.hello(args=HelloArgs(name=name))
-    logger.info(
-        f"Called hello on {app_client.app_name} ({app_client.app_id}) "
-        f"with name={name}, received: {response.abi_return}"
+        on_update=algokit_utils.OnUpdate.AppendApp,
     )
