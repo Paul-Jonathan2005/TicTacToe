@@ -28,3 +28,6 @@ def test_double_join_prevention(algorand):
 def test_invalid_move_occupied_cell(algorand):
     # Setup game, make a move, then try to move to the same cell, expect failure
     pass
+def test_draw_condition(algorand):
+    # Play a full game resulting in a draw, assert is_over and is_draw are set
+    pass
