@@ -21,3 +21,7 @@ def test_tic_tac_toe_game(algorand):
     # Test making moves
     # Test win conditions
     pass
+def test_double_join_prevention(algorand):
+    # Setup game and join as guest
+    # Attempt to join again as the same guest, expect failure
+    pass
