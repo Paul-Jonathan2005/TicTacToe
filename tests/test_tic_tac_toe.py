@@ -25,3 +25,6 @@ def test_double_join_prevention(algorand):
     # Setup game and join as guest
     # Attempt to join again as the same guest, expect failure
     pass
+def test_invalid_move_occupied_cell(algorand):
+    # Setup game, make a move, then try to move to the same cell, expect failure
+    pass
