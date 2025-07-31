@@ -40,3 +40,6 @@ def test_host_cannot_join_as_guest(algorand):
 def test_only_host_can_delete_game(algorand):
     # Guest tries to delete game, expect failure
     pass
+def test_game_state_persistence(algorand):
+    # Make moves, then query state, ensure board and turns are correct
+    pass
