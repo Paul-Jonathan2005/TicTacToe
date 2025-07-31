@@ -37,3 +37,6 @@ def reset_game_state():
 def test_host_cannot_join_as_guest(algorand):
     # Host creates game, then tries to join as guest, expect failure
     pass
+def test_only_host_can_delete_game(algorand):
+    # Guest tries to delete game, expect failure
+    pass
