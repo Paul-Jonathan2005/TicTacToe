@@ -43,3 +43,6 @@ def test_only_host_can_delete_game(algorand):
 def test_game_state_persistence(algorand):
     # Make moves, then query state, ensure board and turns are correct
     pass
+def test_opt_in_initializes_state(algorand):
+    # Opt-in as new player, check games_played and games_won are zero
+    pass
