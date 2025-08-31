@@ -1,3 +1,4 @@
+import re
 from typing import Literal, Tuple, TypeAlias
 from algopy import (
     ARC4Contract, BoxMap, Global, LocalState, OnCompleteAction, Txn, UInt64, arc4,
@@ -29,4 +30,7 @@ class TicTacToe(ARC4Contract):
         
     @arc4.abimethod(allow_actions=[OnCompleteAction.NoOp, OnCompleteAction.OptIn])
     def new_game(self, mbr: gtxn.PaymentTransaction) -> UInt64:
-        pass
+        if Txn.on_completion == OnCompleteAction.OptIn:
+            self.opt_in()
+        self.id_counter += 1
+        return self.id_counter
