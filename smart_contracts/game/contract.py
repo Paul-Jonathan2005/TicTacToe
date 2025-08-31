@@ -34,3 +34,8 @@ class TicTacToe(ARC4Contract):
             self.opt_in()
         self.id_counter += 1
         return self.id_counter
+    assert mbr.receiver == Global.current_application_address
+    pre_new_game_box, exists = op.AcctParamsGet.acct_min_balance(
+        Global.current_application_address
+        )
+    assert exists
