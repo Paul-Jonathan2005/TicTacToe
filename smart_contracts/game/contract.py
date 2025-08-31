@@ -26,3 +26,7 @@ class TicTacToe(ARC4Contract):
     def opt_in(self) -> None:
         self.games_played[Txn.sender] = UInt64(0)
         self.games_won[Txn.sender] = UInt64(0)
+        
+    @arc4.abimethod(allow_actions=[OnCompleteAction.NoOp, OnCompleteAction.OptIn])
+    def new_game(self, mbr: gtxn.PaymentTransaction) -> UInt64:
+        pass
