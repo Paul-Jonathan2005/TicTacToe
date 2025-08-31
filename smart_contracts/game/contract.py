@@ -47,3 +47,10 @@ class TicTacToe(ARC4Contract):
     is_over=arc4.Bool(False),
     turns=arc4.UInt8(),
 )
+    
+    post_new_game_box, exists = op.AcctParamsGet.acct_min_balance(
+    Global.current_application_address
+)
+assert exists
+assert mbr.amount == (post_new_game_box - pre_new_game_box)
+return self.id_counter
