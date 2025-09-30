@@ -18,3 +18,8 @@ class TicTacToe(ARC4Contract):
         self.games_played = LocalState(UInt64)
         self.games_won = LocalState(UInt64)
         self.games = BoxMap(UInt64, GameState)
+
+    @subroutine
+    def opt_in(self) -> None:
+        self.games_played[Txn.sender] = UInt64(0)
+        self.games_won[Txn.sender] = UInt64(0)
