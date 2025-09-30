@@ -50,3 +50,6 @@ class TicTacToe(ARC4Contract):
             Global.current_application_address
         )
         assert exists
+
+        assert mbr.amount == (post_new_game_box - pre_new_game_box)
+        return self.id_counter
