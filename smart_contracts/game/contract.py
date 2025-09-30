@@ -37,3 +37,11 @@ class TicTacToe(ARC4Contract):
             Global.current_application_address
         )
         assert exists
+
+        self.games[self.id_counter] = GameState(
+            board=arc4.StaticArray[arc4.Byte, Literal[9]].from_bytes(op.bzero(9)),
+            host=arc4.Address(Txn.sender),
+            guest=arc4.Address(),
+            is_over=arc4.Bool(False),
+            turns=arc4.UInt8(),
+        )
